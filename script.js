@@ -1,42 +1,47 @@
 var turno=1
 $(document).ready(function() {
   // posiciones de ubicacion
-  crear_partida();
-  $('.table-totito td').click(function(event) {
-    if (!$(this).hasClass('bloqueo')){
-      $(this).attr({turno:turno});
-      if (turno==1){
-        $(this).html('<span class=" icon-cancel" ></span>');
-        turno=2;
-      }else{
-        $(this).html('<span class="icon-circle-empty"></span>');
-        turno=1;
+  crear_partida(function(id){
+    $('.table-totito td').click(function(event) {
+      if (!$(this).hasClass('bloqueo')){
+        $(this).attr({turno:turno});
+        if (turno==1){
+          $(this).html('<span class=" icon-cancel" ></span>');
+          turno=2;
+        }else{
+          $(this).html('<span class="icon-circle-empty"></span>');
+          turno=1;
+        }
+        $(this).addClass('bloqueo');
+        movimiento_partida(id,0,turno);
+        validando_ganador();
       }
-      $(this).addClass('bloqueo');
-
-      validando_ganador();
-    }
+    });
   });
+
 });
 
-function crear_partida(){
+function movimiento_partida(id,posicion,turno){
   $.ajax({
     url: 'include/server.php',
     type: 'POST',
     dataType: 'json',
-    data: {option: 'crear_partida'},
+    data: {opcion: 'movimiento_partida',id:id,posicion:posicion,turno:turno},
     success(data){
       console.log(data);
     }
-  })
-  .done(function() {
-    console.log("success");
-  })
-  .fail(function() {
-    console.log("error");
-  })
-  .always(function() {
-    console.log("complete");
+  });
+
+}
+function crear_partida(respuesta){
+  $.ajax({
+    url: 'include/server.php',
+    type: 'POST',
+    dataType: 'json',
+    data: {opcion: 'crear_partida'},
+    success(data){
+      respuesta(data);
+    }
   });
 
 }
